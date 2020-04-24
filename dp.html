@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Object.definePrototype</title>
+</head>
+<body>
+  <div id="app">
+    <p>你好,<span id="name"></span></p>
+  </div>
+
+  <script>
+    var obj = {}
+    Object.defineProperty(obj,'name',{
+      get(){
+        console.log('获取name')
+        return document.getElementById('name').innerHTML
+      },
+      set(newVal){
+        console.log('设置name')
+        return document.getElementById('name').innerHTML=newVal
+      }
+    })
+    obj.name = 'w'
+    console.log(obj.name)
+  </script>
+</body>
+</html>
