@@ -53,7 +53,7 @@ class Compile {
       }
       if (this.isEvent(attrName)) {
         const dir = attrName.substring(1);
-        // this.eventHandler(node, this.$vm, exp, dir);
+        this.eventHandler(node, this.$vm, exp, dir);
       }
     });
   }
@@ -63,22 +63,48 @@ class Compile {
   isEvent(attr) {
     return attr.indexOf("@") === 0;
   }
+  // 事件处理: 给node添加事件监听，dir-事件名称
+  // 通过vm.$options.methods[exp]可获得回调函数
+  eventHandler(node, vm, exp, dir) {
+    let fn = vm.$options.methods && vm.$options.methods[exp];
+    if (dir && fn) {
+      node.addEventListener(dir, fn.bind(vm));
+    }
+  }
   compileText(node) {
     console.log(RegExp.$1);
     this.update(node, this.$vm, RegExp.$1, "text");
   }
   update(node, vm, exp, dir) {
-    let updatrFn = this[dir + "Updater"];
-    updatrFn && updatrFn(node, vm[exp]);
+    let updaterFn = this[dir + "Updater"];
+    updaterFn && updaterFn(node, vm[exp]);
     // 依赖收集
     new Watcher(vm, exp, function (value) {
-      updatrFn && updatrFn(node, value);
+      updaterFn && updaterFn(node, value);
     });
   }
+  // {{}}
   text(node, vm, exp) {
     this.update(node, vm, exp, "text");
   }
   textUpdater(node, val) {
     node.textContent = val;
+  }
+  // v-html指令
+  html(node, vm, exp) {
+    this.update(node, vm, exp, "html");
+  }
+  htmlUpdater(node, value) {
+    node.innerHTML = value;
+  }
+  // v-model指令
+  model(node, vm, exp) {
+    this.update(node, vm, exp, "model");
+    node.addEventListener("input", e => {
+      vm[exp] = e.target.value;
+    });
+  }
+  modelUpdater(node, value) {
+    node.value = value;
   }
 }
