@@ -58,7 +58,7 @@ class Compile {
     });
   }
   isDirective(attr) {
-    return attr.indexOf("k-") === 0;
+    return attr.indexOf("w-") === 0;
   }
   isEvent(attr) {
     return attr.indexOf("@") === 0;
